@@ -10,7 +10,7 @@ const CsvData = () => {
 
     useEffect(() => {
       setIsLoading(true);
-      Papa.parse('/data.csv', {
+      Papa.parse('/data4.csv', {
           download: true,
           header: true,
           delimiter: ";",
