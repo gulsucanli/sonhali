@@ -75,9 +75,8 @@ const CsvData = () => {
             filteredData.map((val, key) => (
                 <div key={key} className="bg-white shadow-md rounded-lg p-6 flex flex-col justify-between">
                     <div className="">
-                    <h2 className="text-xl font-bold mb-2">{toTitleCase(val.Fransızca)}</h2>
-                    <p className="text-gray-600 text-lg">{toTitleCase(val.Türkçe)}</p>
-
+                        <h2 className="text-xl font-bold mb-2">{val.Fransızca}</h2>
+                        <p className="text-gray-600 text-lg">{val.Türkçe}</p>
 
                     </div>
                 </div>
