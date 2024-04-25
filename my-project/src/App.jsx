@@ -76,8 +76,10 @@ const CsvData = () => {
                     <div className="">
                         <h2 className="text-xl font-bold mb-2">{val.Fransızca}</h2>
                         <p className="text-gray-600 text-lg">{val.Türkçe}</p>
+
                     </div>
                 </div>
+                
             ))
         ) : (
           <div className='bg-white shadow-md rounded-lg p-6 flex flex-col justify-between'>
@@ -85,12 +87,15 @@ const CsvData = () => {
             </div>
         )
     )}
+
 </div>
 
 
 
+<p className="text-center mt-5">{filteredData.length} results found!</p>
 
         </div>
+        
 
     );
 };
