@@ -17,6 +17,10 @@ const CsvData = () => {
           complete: (googleData) => {
               setData(googleData.data);
               setIsLoading(false);
+          },
+          error: (err) => {
+              console.error("Veri alınırken bir hata oluştu:", err);
+              setIsLoading(false);
           }
       });
   }, []);
@@ -97,8 +101,12 @@ const CsvData = () => {
 
 
 
-<p className="text-center mt-5">{filteredData.length} results found!</p>
-
+<p className="text-center mt-5 mb-5">{filteredData.length} results found!</p>
+<footer className="bg-gray-900 text-white py-4 px-6">
+        <div className="container mx-auto flex items-center justify-center">
+          <p className="text-sm">Gülsu Canlı - gulsucanli55@gmail.com</p>
+        </div>
+      </footer>
         </div>
         
 
