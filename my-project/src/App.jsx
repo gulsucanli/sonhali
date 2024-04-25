@@ -85,7 +85,9 @@ const CsvData = () => {
                     <div className="">
                         <h2 className="text-xl font-bold mb-2">{val.Fransızca}</h2>
                         <p className="text-gray-600 text-lg">{val.Türkçe}</p>
-
+                        <div className="mt-4 border-t pt-4">
+                          Deyim
+                        </div>
                     </div>
                 </div>
                 
