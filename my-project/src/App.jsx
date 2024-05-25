@@ -35,13 +35,27 @@ const CsvData = () => {
   }
 
   const filteredData = useMemo(() => {
+    if (!Array.isArray(data)) {
+      console.error("Invalid data: data should be an array");
+      return [];
+    }
+  
     let filtered = data.filter((val) => {
+      if (typeof val !== 'object' || val === null) {
+        console.error("Invalid item in data: item should be an object", val);
+        return false;
+      }
+  
+      if (!val.Fransızca || !val.Türkçe) {
+        console.error("Invalid item in data: item should have both Fransızca and Türkçe properties", val);
+        return false;
+      }
+  
       if (searchTerm === "") {
         return val.Fransızca; // Boşsa hariç tut
       } else {
         const lowerSearchTerm = searchTerm.toLowerCase();
         return (
-          val &&
           val.Fransızca &&
           val.Fransızca.toLowerCase().startsWith(lowerSearchTerm)
         );
@@ -49,7 +63,18 @@ const CsvData = () => {
     }).sort((a, b) => a.Fransızca.localeCompare(b.Fransızca));
   
     // Remove duplicates based on both French and Turkish words
-    filtered = Array.from(new Map(filtered.map(item => [item['Fransızca'].toLowerCase() + ";" + item['Türkçe'].toLowerCase(), item])).values());  
+    const keyFunc = item => item['Fransızca'].toLowerCase() + ";" + item['Türkçe'].toLowerCase();
+    const seen = new Set();
+    filtered = filtered.filter(item => {
+      const key = keyFunc(item);
+      if (seen.has(key)) {
+        return false;
+      } else {
+        seen.add(key);
+        return true;
+      }
+    });
+  
     return filtered;
   }, [data, searchTerm]);
 
