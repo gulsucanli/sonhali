@@ -82,6 +82,7 @@ const CsvData = () => {
           </div>
         </div>
       </header>
+
       <div className="flex flex-wrap justify-center gap-2 mt-5">
         {Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i)).map((letter) => (
           <button
@@ -99,7 +100,8 @@ const CsvData = () => {
           Show All
         </button>
       </div>
-      <div className="container mx-auto grid gap-8 sm:grid-cols-2 lg:grid-cols-3 mt-5">
+      
+      <div className="container mx-auto grid gap-8 sm:grid-cols-2 lg:grid-cols-4 mt-5">
         {isLoading ? (
           <p className="text-center mt-5 mb-5 ms-3 me-4">Yükleniyor...</p>
         ) : error ? (
