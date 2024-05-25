@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Papa from 'papaparse';
+import FuzzySet from 'fuzzyset.js';
 
 const CsvData = () => {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isSuggestionClicked, setIsSuggestionClicked] = useState(false);
 
   useEffect(() => {
       const fetchData = async () => {
@@ -30,21 +33,59 @@ const CsvData = () => {
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
+  
+    const filteredData = useMemo(() => data.filter((val) => {
+        if (searchTerm === "") {
+            return val.Fransızca && val.Türkçe; // Boşsa hariç tut
+        } else {
+            const lowerSearchTerm = searchTerm.toLowerCase();
+            return (
+                val &&
+                val.Fransızca &&
+                val.Türkçe &&
+                (val.Fransızca.toLowerCase().includes(lowerSearchTerm) ||
+                    val.Türkçe.toLowerCase().includes(lowerSearchTerm))
+            );
+        }
+    }).sort((a, b) => a.Fransızca.localeCompare(b.Fransızca)), [data, searchTerm]);
 
-  const filteredData = useMemo(() => data.filter((val) => {
-      if (searchTerm === "") {
-          return val.Fransızca && val.Türkçe; // Boşsa hariç tut
+    useEffect(() => {
+      if (filteredData.length === 0 && searchTerm !== "" && !isSuggestionClicked) {
+        const terms = data.map(val => val.Fransızca.toLowerCase());
+        const fuzzy = FuzzySet(terms);
+        const result = fuzzy.get(searchTerm.toLowerCase());
+        // Limit suggestions to a specific number (e.g., 5)
+        const limitedSuggestions = result ? result.slice(0, 5).map(([_, term]) => term) : [];
+        setSuggestions(limitedSuggestions);
+        fetchSuggestions(searchTerm);
+
       } else {
-          const lowerSearchTerm = searchTerm.toLowerCase();
-          return (
-              val &&
-              val.Fransızca &&
-              val.Türkçe &&
-              (val.Fransızca.toLowerCase().includes(lowerSearchTerm) ||
-                  val.Türkçe.toLowerCase().includes(lowerSearchTerm))
-          );
+        setSuggestions([]);
       }
-  }).sort((a, b) => a.Fransızca.localeCompare(b.Fransızca)), [data, searchTerm]);
+    }, [filteredData, data, isSuggestionClicked]);
+    
+    const fetchSuggestions = async (searchTerm) => {
+      const terms = data.map(val => val.Fransızca.toLowerCase());
+      const fuzzy = FuzzySet(terms);
+      const result = fuzzy.get(searchTerm.toLowerCase(), { limit: 5 }); // Limit suggestions to 5
+      const limitedSuggestions = result ? result.map(([_, term]) => term) : [];
+      setSuggestions(limitedSuggestions);
+    }
+    
+    
+
+    const handleSuggestionClick = (suggestion) => {
+      setIsSuggestionClicked(true);
+      setSearchTerm(suggestion);
+      fetchSuggestions(suggestion);
+
+    }
+
+    useEffect(() => {
+      if (isSuggestionClicked) {
+        setIsSuggestionClicked(false);
+      }
+    }, [isSuggestionClicked]);
 
     return (
         <div className="flex flex-col min-h-screen text-center">
@@ -87,6 +128,21 @@ const CsvData = () => {
                     </div>
                 )}
             </div>
+            {suggestions.length > 0 && suggestions.length <= 5 && (  // Limit to 5 suggestions
+  <div className="suggestions">
+    <p>Did you mean:</p>
+    {suggestions.map((suggestion, index) => (
+      <React.Fragment key={index}>
+        <button onClick={() => handleSuggestionClick(suggestion)}>
+          {suggestion}
+        </button>
+        {index < suggestions.length - 1 && ', '}
+      </React.Fragment>
+    ))}
+  </div>
+)}
+
+
 
             <p className="text-center mt-5 mb-5">{filteredData.length} sonuç bulundu!</p>
             <footer className="bg-gray-900 text-white py-4 px-6 fixed bottom-0 min-w-full">
@@ -101,4 +157,3 @@ const CsvData = () => {
 };
 
 export default CsvData;
-
