@@ -14,7 +14,7 @@ const CsvData = () => {
       const fetchData = async () => {
           setIsLoading(true);
           try {
-              const response = await fetch('/data4.csv');
+              const response = await fetch('/datason2605.csv');
               const csvData = await response.text();
               const parsedData = Papa.parse(csvData, {
                   header: true,
