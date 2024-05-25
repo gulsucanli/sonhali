@@ -1,50 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Papa from 'papaparse';
 
 const CsvData = () => {
-    const [data, setData] = useState([]);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true);
-            try {
-                const response = await fetch('/data4.csv');
-                const csvData = await response.text();
-                const parsedData = Papa.parse(csvData, {
-                    header: true,
-                    delimiter: ";",
-                });
-                setData(parsedData.data);
-            } catch (error) {
-                console.error("Veri alınırken bir hata oluştu:", error);
-            }
-            setIsLoading(false);
-        };
-        fetchData();
-    }, []);
+  useEffect(() => {
+      const fetchData = async () => {
+          setIsLoading(true);
+          try {
+              const response = await fetch('/data4.csv');
+              const csvData = await response.text();
+              const parsedData = Papa.parse(csvData, {
+                  header: true,
+                  delimiter: ";",
+              });
+              setData(parsedData.data);
+          } catch (error) {
+              console.error("Veri alınırken bir hata oluştu:", error);
+              setError(error);
+          }
+          setIsLoading(false);
+      };
+      fetchData();
+  }, []);
 
-    const filteredData = data.filter((val) => {
-        if (searchTerm === "") {
-            return val.Fransızca && val.Türkçe; // Boşsa hariç tut
-        } else {
-            const lowerSearchTerm = searchTerm.toLowerCase();
-            return (
-                val &&
-                val.Fransızca &&
-                val.Türkçe &&
-                (val.Fransızca.toLowerCase().includes(lowerSearchTerm) ||
-                    val.Türkçe.toLowerCase().includes(lowerSearchTerm))
-            );
-        }
-    }).sort((a, b) => a.Fransızca.localeCompare(b.Fransızca));
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
-    function toTitleCase(str) {
-        return str.replace(/\w\S*/g, function (txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-        });
-    }
+  const filteredData = useMemo(() => data.filter((val) => {
+      if (searchTerm === "") {
+          return val.Fransızca && val.Türkçe; // Boşsa hariç tut
+      } else {
+          const lowerSearchTerm = searchTerm.toLowerCase();
+          return (
+              val &&
+              val.Fransızca &&
+              val.Türkçe &&
+              (val.Fransızca.toLowerCase().includes(lowerSearchTerm) ||
+                  val.Türkçe.toLowerCase().includes(lowerSearchTerm))
+          );
+      }
+  }).sort((a, b) => a.Fransızca.localeCompare(b.Fransızca)), [data, searchTerm]);
 
     return (
         <div className="flex flex-col min-h-screen text-center">
@@ -70,13 +70,14 @@ const CsvData = () => {
             <div className="container mx-auto grid gap-8 sm:grid-cols-2 lg:grid-cols-3 mt-5">
                 {isLoading ? (
                     <p className="text-center mt-5 mb-5 ms-3 me-4">Yükleniyor...</p>
+                ) : error ? (
+                    <p className="text-center mt-5 mb-5 ms-3 me-4">Bir hata oluştu: {error.message}</p>
                 ) : filteredData.length > 0 ? (
                     filteredData.map((val, key) => (
                         <div key={key} className="bg-white shadow-md rounded-lg p-6 flex flex-col justify-between">
                             <div className="">
-                                <h2 className="text-xl font-bold mb-2">{val.Fransızca}</h2>
-                                <p className="text-gray-600 text-lg">{val.Türkçe}</p>
-                                <div className="mt-4 border-t pt-4">Deyim</div>
+                                <h2 className="text-xl font-bold mb-2">{capitalizeFirstLetter(val.Fransızca)}</h2>
+                                <p className="text-gray-600 text-lg">{capitalizeFirstLetter(val.Türkçe)}</p>
                             </div>
                         </div>
                     ))
