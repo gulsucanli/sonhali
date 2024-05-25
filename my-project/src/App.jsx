@@ -86,7 +86,7 @@ const CsvData = () => {
         {Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i)).map((letter) => (
           <button
             key={letter}
-            className={`px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ${activeButton === letter ? "ring-2 ring-green-500" : ""}`}
+            className={`px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors ${activeButton === letter ? "ring-2 ring-green-500 bg-green-100" : ""}`}
             onClick={() => handleButtonClick(letter)}
           >
             {letter}
