@@ -49,9 +49,8 @@ const CsvData = () => {
       }
     }).sort((a, b) => a.Fransızca.localeCompare(b.Fransızca));
   
-    // Remove duplicates
-    filtered = Array.from(new Set(filtered.map(JSON.stringify))).map(JSON.parse);
-  
+    // Remove duplicates based on both French and Turkish words
+    filtered = Array.from(new Map(filtered.map(item => [item['Fransızca'].toLowerCase() + ";" + item['Türkçe'].toLowerCase(), item])).values());  
     return filtered;
   }, [data, searchTerm]);
 
@@ -110,8 +109,7 @@ const CsvData = () => {
             <div key={key} className="bg-white shadow-md rounded-lg p-6 flex flex-col justify-between">
               <div className="">
                 <h2 className="text-xl font-bold mb-2">{capitalizeFirstLetter(val.Fransızca)}</h2>
-                <p className="text-gray-600 text-lg">{capitalizeFirstLetter(val.Türkçe)}</p>
-              </div>
+                <p className="text-gray-600 text-lg">{val.Türkçe ? val.Türkçe.split(' ').map(capitalizeFirstLetter).join(' ') : ""}</p>              </div>
             </div>
           ))
         ) : (
