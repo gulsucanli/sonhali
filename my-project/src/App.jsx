@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Papa from 'papaparse';
-import FuzzySet from 'fuzzyset.js';
 
 const CsvData = () => {
   const [data, setData] = useState([]);
