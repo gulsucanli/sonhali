@@ -48,7 +48,7 @@ const CsvData = () => {
 
     return (
         
-        <div className="flex flex-col h-screen text-center">
+        <div className="flex flex-col min-h-screen text-center">
           
       <header className="bg-gray-900 text-white py-6 px-6">
         <div className="container mx-auto flex items-center justify-between">
@@ -104,7 +104,7 @@ const CsvData = () => {
 
 
 <p className="text-center mt-5 mb-5">{filteredData.length} results found!</p>
-<footer className="bg-gray-900 text-white py-4 px-6">
+<footer className="bg-gray-900 text-white py-4 px-6 fixed bottom-0 min-w-full">
         <div className="container mx-auto flex items-center justify-center">
           <p className="text-sm">Gülsu <i>Canlı</i> - Sociologie Glossaire</p>
         </div>
