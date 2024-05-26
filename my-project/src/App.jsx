@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Papa from 'papaparse';
 
 const CsvData = () => {
@@ -10,6 +10,8 @@ const CsvData = () => {
   const [error, setError] = useState(null);
   const [activeButton, setActiveButton] = useState(null);
   const [scrollPosition, setScrollPosition] = useState(0);
+  const [searchClicked, setSearchClicked] = useState(false);
+  const searchRef = useRef();
 
   useEffect(() => {
     const updateScrollPosition = () => {
@@ -97,27 +99,51 @@ const CsvData = () => {
     setSearchTerm("");
   }
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setSearchClicked(false);
+      }
+    }
+
+    // Escape key handler
+    function handleEscapeKey(event) {
+      if (event.key === 'Escape') {
+        setSearchClicked(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen text-center antialiased">
-     <header className="bg-gray-900 text-white py-6 px-6">
-  <div className="container mx-auto flex items-center justify-between mb-1">
-    <div className="flex items-center me-7 ">
-      <img src="https://www.iconarchive.com/download/i99312/dtafalonso/yosemite-flat/Dictionary.ico" alt="Dictionary Icon" className="mr-2 h-8 w-8 mt-2" />
-      <h1 className="text-3xl font-normal me-2 antialiased tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-violet-500">Sociologie Glossaire</h1>
-    </div>
-    <div className="relative w-full max-w-md">
-      <input
-        className={`bg-gray-800 text-white px-4 py-3 rounded-md pr-10 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full ${
-          searchTerm && filteredData.length > 0 ? "ring-green-500" : searchTerm && filteredData.length === 0 ? "ring-rose-500 " : ""
-        }`}
-        placeholder="Cherchez les mots..."
-        type="text"
-        onChange={(event) => setSearchTerm(event.target.value)}
-      />
-      <i className="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-    </div>
-  </div>
-</header>
+         <header className="bg-gray-900 text-white py-6 px-6">
+      <div className="container mx-auto flex items-center justify-between mb-1">
+        <div className={`flex items-center me-7 transition-all duration-700 ${searchClicked ? 'hidden' : 'flex'} sm:flex`}>
+          <h1 className="text-3xl font-normal me-2 antialiased tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-green-500 to-violet-500">Sociologie Glossaire</h1>
+        </div>
+        <div className={`relative w-full max-w-md transition-all duration-500 ${searchClicked ? 'sm:w-full' : ''}`}>
+          <input
+            ref={searchRef}
+            className={`bg-gray-800 text-white px-4 py-3 rounded-md pr-10 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent w-full ${
+              searchTerm && filteredData.length > 0 ? "ring-green-500" : searchTerm && filteredData.length === 0 ? "ring-rose-500 " : ""
+            }`}
+            placeholder="Cherchez les mots..."
+            type="text"
+            onClick={() => setSearchClicked(true)}
+            onChange={(event) => setSearchTerm(event.target.value)}
+          />
+          <i className="fas fa-search absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+        </div>
+      </div>
+    </header>
+
 
       <div className="flex flex-wrap justify-center gap-2 mt-5">
         {Array.from({ length: 26 }, (_, i) => String.fromCharCode('A'.charCodeAt(0) + i)).map((letter) => (
